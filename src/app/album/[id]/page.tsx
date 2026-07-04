@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getAlbumById, getPaintingsByAlbum } from "@/data/paintings";
-import PaintingCard from "@/components/PaintingCard";
+import { getAlbumById, getPaintingsByAlbum, albums } from "@/data/paintings";
+import AnimatedGallery from "@/components/AnimatedGallery";
 import ScrollReveal from "@/components/ScrollReveal";
 
 export default async function AlbumDetailPage({
@@ -20,6 +20,7 @@ export default async function AlbumDetailPage({
 
   return (
     <div className="mx-auto max-w-7xl px-6 pt-10 pb-20">
+      {/* Breadcrumb */}
       <ScrollReveal>
         <nav className="flex items-center gap-2 text-sm text-[var(--color-text-muted)] mb-10">
           <Link href="/" className="hover:text-[var(--color-accent)] transition-colors">
@@ -36,37 +37,34 @@ export default async function AlbumDetailPage({
         </nav>
       </ScrollReveal>
 
+      {/* Album Header */}
       <ScrollReveal>
-        <div className="mb-16">
-          <div className="flex flex-wrap items-baseline gap-4 mb-4">
-            <h1 className="font-display text-3xl md:text-4xl font-semibold text-[var(--color-text-primary)]">
-              👑 {album.titleZh}
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center gap-3 mb-4">
+            <span className="text-3xl">🖼️</span>
+            <h1 className="font-display text-3xl md:text-5xl font-semibold text-[var(--color-text-primary)]">
+              {album.titleZh}
             </h1>
-            <span className="text-xl text-[var(--color-text-muted)] font-light">
-              {album.title}
-            </span>
+            <span className="text-3xl">🖼️</span>
           </div>
-          <div className="text-sm text-[var(--color-text-muted)] mb-4">
-            {album.year} · {album.paintingIds.length} 幅作品
-          </div>
-          <div className="accent-line mb-6" />
-          <p className="text-base text-[var(--color-text-secondary)] leading-relaxed max-w-3xl mb-4">
-            {album.descriptionZh}
+          <p className="text-sm text-[var(--color-text-muted)] mb-3">
+            {album.title} · {album.year} · {album.paintingIds.length} 幅作品
           </p>
-          <p className="text-sm text-[var(--color-text-muted)] leading-relaxed max-w-3xl italic">
-            {album.description}
+          <div className="flex justify-center">
+            <div className="w-24 h-0.5 bg-gradient-to-r from-transparent via-[var(--color-accent)] to-transparent" />
+          </div>
+          <p className="mt-6 text-base text-[var(--color-text-secondary)] leading-relaxed max-w-2xl mx-auto">
+            {album.descriptionZh}
           </p>
         </div>
       </ScrollReveal>
 
+      {/* Animated Gallery */}
       {albumPaintings.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {albumPaintings.map((painting) => (
-            <ScrollReveal key={painting.id}>
-              <PaintingCard painting={painting} />
-            </ScrollReveal>
-          ))}
-        </div>
+        <AnimatedGallery
+          paintings={albumPaintings}
+          albumTitle={album.titleZh}
+        />
       ) : (
         <div className="text-center py-20 text-[var(--color-text-muted)]">
           <span className="text-4xl block mb-3">🖼️</span>
@@ -74,8 +72,9 @@ export default async function AlbumDetailPage({
         </div>
       )}
 
+      {/* Back link */}
       <ScrollReveal>
-        <div className="mt-12">
+        <div className="mt-16 text-center">
           <Link
             href="/album"
             className="inline-flex items-center gap-2 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-accent)] transition-colors"
@@ -87,8 +86,6 @@ export default async function AlbumDetailPage({
     </div>
   );
 }
-
-import { albums } from "@/data/paintings";
 
 export function generateStaticParams() {
   return albums.map((a) => ({ id: a.id }));

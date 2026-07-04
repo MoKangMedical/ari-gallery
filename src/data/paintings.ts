@@ -583,6 +583,27 @@ export const paintings: Painting[] = [
     albumIds: ["ari-collection", "sketches"],
     tags: ["暮色", "玫瑰", "温暖", "霞光"],
   },
+  {
+    id: "ari-29",
+    title: "Horizon's Promise",
+    titleZh: "地平线的承诺",
+    year: 2025,
+    medium: "素描淡彩",
+    dimensions: "70 × 50 cm",
+    imageUrl: "/paintings/ari-painting-29.jpg",
+    thumbnailUrl: "/paintings/ari-painting-29-thumb.jpg",
+    description:
+      "宽阔的横向构图——明亮的天空占据上方，中部是细腻的中灰过渡，底部沉淀为大地的深绿色。一幅安静而辽阔的风景。",
+    interpretation: {
+      summary: "天与地在远处交汇，画下一条沉默的地平线——那是承诺开始的地方。",
+      theme: "地平线、天地交汇、辽阔与希望",
+      technique: "横幅构图让视野自然向两侧延伸。顶部为明亮的淡绿白天空，中部是柔和的中性灰过渡带，底部沉淀为带有绿意的深灰——大地在呼吸。整体色调克制，用最少的色彩说最多的话。",
+      emotion: "站在高处眺望远方——地平线永远在召唤。Aria 用一张横向的画布捕捉了那种「向前走」的冲动。画面没有明确的路，但你知道该往哪个方向走。",
+      extended: "这幅横向作品是 Aria 对「远方」的致敬。她放弃了竖向构图的纵深感，转而用横向展开来强调空间的辽阔。天空占比最大——因为远方的可能性永远比脚下的路更重要。这是一封写给未来的情书。",
+    },
+    albumIds: ["ari-collection", "sketches"],
+    tags: ["地平线", "辽阔", "风景", "希望"],
+  },
 ];
 
 export const albums: Album[] = [
@@ -591,9 +612,9 @@ export const albums: Album[] = [
     title: "Aria's Complete Works",
     titleZh: "Aria的画集",
     description:
-      "The complete collection of Aria's original paintings — 28 works spanning landscapes, architecture, nature studies, and the poetry of everyday light. Each piece is a page from her visual diary, painted with sensitivity and a princess's tender gaze upon the world.",
+      "The complete collection of Aria's original paintings — 29 works spanning landscapes, architecture, nature studies, and the poetry of everyday light. Each piece is a page from her visual diary, painted with sensitivity and a princess's tender gaze upon the world.",
     descriptionZh:
-      "Aria的完整画集——28幅原创作品，涵盖风景、建筑、自然写生和日常光影的诗意捕捉。每一幅都是她视觉日记的一页，以温柔的眼光注视着这个世界。",
+      "Aria的完整画集——29幅原创作品，涵盖风景、建筑、自然写生和日常光影的诗意捕捉。每一幅都是她视觉日记的一页，以温柔的眼光注视着这个世界。",
     coverPaintingId: "ari-14",
     paintingIds: paintings.map((p) => p.id),
     year: "2024",
