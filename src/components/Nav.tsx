@@ -6,6 +6,7 @@ import { useState } from "react";
 
 const links = [
   { href: "/", label: "画廊", en: "Gallery", icon: "🏰" },
+  { href: "/3d", label: "3D", en: "3D View", icon: "🌐" },
   { href: "/album", label: "专辑", en: "Albums", icon: "👑" },
   { href: "/about", label: "关于 Ari", en: "About", icon: "💕" },
 ];

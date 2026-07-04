@@ -103,6 +103,17 @@ export default function Hero() {
             </svg>
           </Link>
           <Link
+            href="/3d"
+            className="btn-princess"
+            style={{
+              background: "linear-gradient(135deg, #7c3aed, #a855f7)",
+              color: "white",
+              boxShadow: "0 4px 20px rgba(124,58,237,0.4)",
+            }}
+          >
+            🌐 3D 画廊
+          </Link>
+          <Link
             href="/album"
             className="btn-princess btn-princess-outline"
           >
