@@ -1,79 +1,33 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getAlbumById, getPaintingsByAlbum, albums } from "@/data/paintings";
-import AnimatedGallery from "@/components/AnimatedGallery";
-import ScrollReveal from "@/components/ScrollReveal";
 
-export default async function AlbumDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function AlbumDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const album = getAlbumById(id);
-
-  if (!album) {
-    notFound();
-  }
-
+  if (!album) notFound();
   const albumPaintings = getPaintingsByAlbum(album.id);
 
   return (
-    <div className="mx-auto max-w-[1200px] px-6 lg:px-12 pt-12 pb-24">
-      {/* Breadcrumb */}
-      <ScrollReveal>
-        <nav className="flex items-center gap-2 text-xs tracking-[0.05em] text-[var(--color-text-muted)] mb-12">
-          <Link href="/" className="hover:text-[var(--color-text-primary)] transition-colors uppercase">Gallery</Link>
-          <span>/</span>
-          <Link href="/album" className="hover:text-[var(--color-text-primary)] transition-colors uppercase">Albums</Link>
-          <span>/</span>
-          <span className="text-[var(--color-text-secondary)]">{album.title}</span>
-        </nav>
-      </ScrollReveal>
+    <div style={{ maxWidth: "1600px", margin: "0 auto", padding: "160px 40px 80px" }}>
+      <Link href="/album" style={{ fontSize: "0.65rem", letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--color-text-muted)", textDecoration: "none", marginBottom: "2rem", display: "inline-block" }}>← Albums</Link>
+      <h1 style={{ fontFamily: "var(--font-display)", fontSize: "2.5rem", fontWeight: 400, marginBottom: "0.5rem" }}>{album.titleZh}</h1>
+      <p style={{ fontSize: "0.75rem", color: "var(--color-text-muted)", marginBottom: "1rem" }}>{album.title} · {album.year} · {album.paintingIds.length} works</p>
+      <p style={{ fontSize: "0.9rem", color: "var(--color-text-secondary)", maxWidth: "600px", marginBottom: "3rem", lineHeight: 1.7 }}>{album.descriptionZh}</p>
 
-      {/* Album Header */}
-      <ScrollReveal>
-        <div className="mb-16">
-          <div className="accent-line mb-6" />
-          <h1 className="font-display text-3xl md:text-4xl font-medium text-[var(--color-text-primary)] mb-2">
-            {album.titleZh}
-          </h1>
-          <p className="text-sm text-[var(--color-text-secondary)] tracking-[0.02em]">
-            {album.title} · {album.year} · {album.paintingIds.length} works
-          </p>
-          <p className="text-sm text-[var(--color-text-muted)] mt-4 max-w-2xl leading-relaxed">
-            {album.descriptionZh}
-          </p>
-        </div>
-      </ScrollReveal>
-
-      {/* Gallery */}
-      {albumPaintings.length > 0 ? (
-        <AnimatedGallery
-          paintings={albumPaintings}
-          albumTitle={album.titleZh}
-        />
-      ) : (
-        <div className="text-center py-20 text-[var(--color-text-muted)]">
-          <p>No paintings in this album.</p>
-        </div>
-      )}
-
-      {/* Back */}
-      <ScrollReveal>
-        <div className="mt-16">
-          <Link
-            href="/album"
-            className="text-xs tracking-[0.1em] uppercase text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors"
-          >
-            ← Back to Albums
+      <div style={{ columns: 4, columnGap: 8 }}>
+        {albumPaintings.map((p) => (
+          <Link key={p.id} href={`/painting/${p.id}`}
+            style={{ breakInside: "avoid", marginBottom: 8, display: "block", position: "relative", overflow: "hidden" }}>
+            <img src={p.thumbnailUrl} alt={p.title} loading="lazy" style={{ width: "100%", display: "block", filter: "brightness(0.95)", transition: "filter 0.3s, transform 0.5s" }} />
+            <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.4), transparent)", opacity: 0, transition: "opacity 0.3s", display: "flex", alignItems: "flex-end", padding: 12 }}>
+              <span style={{ color: "white", fontFamily: "var(--font-display)", fontSize: "0.85rem" }}>{p.titleZh}</span>
+            </div>
           </Link>
-        </div>
-      </ScrollReveal>
+        ))}
+      </div>
     </div>
   );
 }
 
-export function generateStaticParams() {
-  return albums.map((a) => ({ id: a.id }));
-}
+export function generateStaticParams() { return albums.map((a) => ({ id: a.id })); }

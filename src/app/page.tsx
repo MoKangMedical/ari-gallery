@@ -1,84 +1,117 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { paintings } from "@/data/paintings";
 import Hero from "@/components/Hero";
-import PaintingCard from "@/components/PaintingCard";
-import ScrollReveal from "@/components/ScrollReveal";
+import Lightbox from "@/components/Lightbox";
 
-const FILTERS = [
-  { label: "All", value: "all" },
-  { label: "Light", value: "light" },
-  { label: "Nature", value: "nature" },
-  { label: "Architecture", value: "architecture" },
-  { label: "Abstract", value: "abstract" },
-];
+const FILTERS = ["All", "Light", "Nature", "City", "Abstract"];
 
 export default function HomePage() {
-  const [filter, setFilter] = useState("all");
+  const [filter, setFilter] = useState("All");
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [revealed, setRevealed] = useState<Set<number>>(new Set());
 
-  const filteredPaintings = useMemo(() => {
-    if (filter === "all") return paintings;
+  const filtered = useMemo(() => {
+    if (filter === "All") return paintings;
     return paintings.filter((p) => {
-      const tags = [...p.tags, ...(p.interpretation?.theme?.split(/[、，,・]/) || [])];
-      const all = tags.join(" ").toLowerCase();
+      const s = [...p.tags, p.interpretation?.theme || ""].join(" ").toLowerCase();
       switch (filter) {
-        case "light": return /光|light|shadow|影|sun|日|glow/.test(all);
-        case "nature": return /自然|nature|树|tree|花|flower|山|hill|水|water|云|cloud|风|wind|雪|snow|雨|rain|野|field|森林|forest|湖|lake|河|river|海|sea/.test(all);
-        case "architecture": return /建筑|architecture|街|street|城市|city|墙|wall|塔|tower|老|old/.test(all);
-        case "abstract": return /抽象|abstract|大地|earth|本质|essence|暗|dark|夜|night/.test(all);
+        case "Light": return /光|light|sun|glow|shine|黄昏|暮|shadow|影/.test(s);
+        case "Nature": return /自然|nature|树|tree|山|hill|水|water|花|flower|云|cloud|风|wind|雪|snow|雨|rain|野|field|森林|forest|湖|lake|河|river|海|sea|草|叶|石|stone/.test(s);
+        case "City": return /城市|city|街|street|建筑|architect|墙|wall|塔|tower|老|old/.test(s);
+        case "Abstract": return /抽象|abstract|大地|earth|本质|暗|dark|夜|night|记忆|memory/.test(s);
         default: return true;
       }
     });
   }, [filter]);
 
+  // Scroll reveal
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            const idx = Number((e.target as HTMLElement).dataset.index);
+            setRevealed((prev) => new Set(prev).add(idx));
+          }
+        });
+      },
+      { threshold: 0.05, rootMargin: "0px 0px -40px 0px" }
+    );
+    document.querySelectorAll(".masonry-item").forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, [filtered]);
+
+  const openLightbox = useCallback((index: number) => setLightboxIndex(index), []);
+  const closeLightbox = useCallback(() => setLightboxIndex(null), []);
+  const prevLightbox = useCallback(() => setLightboxIndex((i) => i !== null ? (i - 1 + filtered.length) % filtered.length : null), [filtered.length]);
+  const nextLightbox = useCallback(() => setLightboxIndex((i) => i !== null ? (i + 1) % filtered.length : null), [filtered.length]);
+
+  // Keyboard nav for lightbox
+  useEffect(() => {
+    if (lightboxIndex === null) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowLeft") prevLightbox();
+      if (e.key === "ArrowRight") nextLightbox();
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [lightboxIndex, closeLightbox, prevLightbox, nextLightbox]);
+
   return (
     <>
       <Hero />
 
-      {/* Gallery Section */}
-      <section className="mx-auto max-w-[1440px] px-6 lg:px-12 pb-24">
-        {/* Header */}
-        <ScrollReveal>
-          <div className="text-center mt-20 mb-16">
-            <div className="accent-line mx-auto mb-6" />
-            <h2 className="font-display text-2xl md:text-3xl font-medium text-[var(--color-text-primary)] mb-3">
-              Collection
-            </h2>
-            <p className="text-sm text-[var(--color-text-secondary)] tracking-[0.05em] max-w-md mx-auto leading-relaxed">
-              {paintings.length} paintings exploring light, nature, and the poetry of everyday moments.
-            </p>
-          </div>
-        </ScrollReveal>
+      <section className="gallery">
+        <div className="gallery-header">
+          <h2>Collection</h2>
+          <p>{filtered.length} Paintings · Sketch Watercolor</p>
+        </div>
 
-        {/* Filter */}
-        <div className="flex flex-wrap justify-center gap-1 mb-14">
+        <div className="filter-bar">
           {FILTERS.map((f) => (
-            <button
-              key={f.value}
-              onClick={() => setFilter(f.value)}
-              className={`filter-btn ${filter === f.value ? "active" : ""}`}
+            <button key={f} className={`filter-btn ${filter === f ? "active" : ""}`}
+              onClick={() => setFilter(f)}>{f}</button>
+          ))}
+        </div>
+
+        <div className="masonry">
+          {filtered.map((p, i) => (
+            <div
+              key={p.id}
+              className="masonry-item"
+              data-index={i}
+              onClick={() => openLightbox(i)}
+              style={{
+                opacity: revealed.has(i) ? 1 : 0,
+                transform: revealed.has(i) ? "translateY(0)" : "translateY(30px)",
+                transition: `opacity 0.6s var(--ease-out) ${i * 30}ms, transform 0.6s var(--ease-out) ${i * 30}ms`,
+              }}
             >
-              {f.label}
-            </button>
+              <img src={p.thumbnailUrl} alt={p.title} loading="lazy" />
+              <div className="masonry-overlay">
+                <div>
+                  <h3>{p.titleZh}</h3>
+                  <span>{p.title} · {p.year}</span>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
-
-        {/* Gallery Grid - masonry-like 4 columns on large screens */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 md:gap-6">
-          {filteredPaintings.map((painting, i) => (
-            <ScrollReveal key={painting.id} delay={i * 40}>
-              <PaintingCard painting={painting} />
-            </ScrollReveal>
-          ))}
-        </div>
-
-        {filteredPaintings.length === 0 && (
-          <div className="text-center py-20">
-            <p className="text-[var(--color-text-muted)]">No paintings match this filter.</p>
-          </div>
-        )}
       </section>
+
+      {lightboxIndex !== null && (
+        <Lightbox
+          painting={filtered[lightboxIndex]}
+          onClose={closeLightbox}
+          onPrev={prevLightbox}
+          onNext={nextLightbox}
+          hasPrev={lightboxIndex > 0}
+          hasNext={lightboxIndex < filtered.length - 1}
+        />
+      )}
     </>
   );
 }
