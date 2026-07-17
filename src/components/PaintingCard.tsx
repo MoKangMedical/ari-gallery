@@ -1,55 +1,51 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { Painting } from "@/lib/types";
 
 export default function PaintingCard({ painting }: { painting: Painting }) {
+  const [imgLoaded, setImgLoaded] = useState(false);
+
   return (
     <Link href={`/painting/${painting.id}`} className="painting-card block group">
-      {/* Real painting image */}
-      <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-pink-50 via-white to-blue-50">
+      {/* Image */}
+      <div className="relative aspect-[4/3] overflow-hidden bg-[var(--color-bg-elevated)]">
         <img
           src={painting.thumbnailUrl}
           alt={painting.title}
-          className="absolute inset-0 w-full h-full object-cover gallery-image"
+          className={`card-image absolute inset-0 w-full h-full object-cover ${
+            imgLoaded ? "img-loaded" : "img-loading"
+          }`}
           loading="lazy"
+          onLoad={() => setImgLoaded(true)}
         />
 
-        {/* Decorative corners overlay */}
-        <div className="absolute top-2 left-2 text-lg opacity-60 sparkle-icon drop-shadow-md">✨</div>
-        <div className="absolute top-2 right-2 text-lg opacity-60 sparkle-icon drop-shadow-md">💕</div>
-        <div className="absolute bottom-2 left-2 text-lg opacity-60 sparkle-icon drop-shadow-md">❄️</div>
-        <div className="absolute bottom-2 right-2 text-lg opacity-60 sparkle-icon drop-shadow-md">⭐</div>
-
-        {/* Hover overlay with princess frame */}
-        <div className="absolute inset-0 bg-gradient-to-t from-pink-900/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        {/* Hover overlay */}
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500" />
+        <div className="absolute bottom-0 left-0 right-0 p-5 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+          <span className="inline-block px-3 py-1 text-[10px] tracking-[0.1em] uppercase bg-white/90 text-[var(--color-text-primary)]">
+            View Details →
+          </span>
+        </div>
       </div>
 
       {/* Info */}
-      <div className="relative z-10 p-5">
-        <div className="flex items-start justify-between gap-2 mb-1">
-          <h3 className="font-display text-lg font-medium text-[var(--color-text-primary)] group-hover:text-[var(--color-accent)] transition-colors duration-300">
+      <div className="px-1 pt-4 pb-2">
+        <div className="flex items-start justify-between gap-3 mb-1">
+          <h3 className="font-display text-base font-medium text-[var(--color-text-primary)] group-hover:text-[var(--color-accent)] transition-colors duration-300 leading-snug">
             {painting.titleZh}
           </h3>
-          <span className="text-xs text-[var(--color-text-muted)] shrink-0 mt-1 bg-pink-50 px-2 py-0.5 rounded-full">
+          <span className="text-xs text-[var(--color-text-muted)] shrink-0 mt-0.5 tabular-nums">
             {painting.year}
           </span>
         </div>
-        <p className="text-xs text-[var(--color-text-secondary)] mb-3 font-sans">
-          {painting.title} · {painting.medium}
+        <p className="text-xs text-[var(--color-text-secondary)] tracking-[0.02em] font-light">
+          {painting.title}
         </p>
-        <p className="text-sm text-[var(--color-text-muted)] leading-relaxed line-clamp-2">
-          {painting.description}
+        <p className="text-xs text-[var(--color-text-muted)] mt-1">
+          {painting.medium}
         </p>
-
-        {/* Tags */}
-        <div className="flex flex-wrap gap-1.5 mt-3">
-          {painting.tags.slice(0, 3).map((tag) => (
-            <span key={tag} className="tag-badge">
-              {tag}
-            </span>
-          ))}
-        </div>
       </div>
     </Link>
   );

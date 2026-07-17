@@ -19,47 +19,35 @@ export default async function AlbumDetailPage({
   const albumPaintings = getPaintingsByAlbum(album.id);
 
   return (
-    <div className="mx-auto max-w-7xl px-6 pt-10 pb-20">
+    <div className="mx-auto max-w-[1200px] px-6 lg:px-12 pt-12 pb-24">
       {/* Breadcrumb */}
       <ScrollReveal>
-        <nav className="flex items-center gap-2 text-sm text-[var(--color-text-muted)] mb-10">
-          <Link href="/" className="hover:text-[var(--color-accent)] transition-colors">
-            🏰 画廊
-          </Link>
+        <nav className="flex items-center gap-2 text-xs tracking-[0.05em] text-[var(--color-text-muted)] mb-12">
+          <Link href="/" className="hover:text-[var(--color-text-primary)] transition-colors uppercase">Gallery</Link>
           <span>/</span>
-          <Link href="/album" className="hover:text-[var(--color-accent)] transition-colors">
-            📚 专辑
-          </Link>
+          <Link href="/album" className="hover:text-[var(--color-text-primary)] transition-colors uppercase">Albums</Link>
           <span>/</span>
-          <span className="text-[var(--color-text-secondary)]">
-            {album.titleZh}
-          </span>
+          <span className="text-[var(--color-text-secondary)]">{album.title}</span>
         </nav>
       </ScrollReveal>
 
       {/* Album Header */}
       <ScrollReveal>
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-3 mb-4">
-            <span className="text-3xl">🖼️</span>
-            <h1 className="font-display text-3xl md:text-5xl font-semibold text-[var(--color-text-primary)]">
-              {album.titleZh}
-            </h1>
-            <span className="text-3xl">🖼️</span>
-          </div>
-          <p className="text-sm text-[var(--color-text-muted)] mb-3">
-            {album.title} · {album.year} · {album.paintingIds.length} 幅作品
+        <div className="mb-16">
+          <div className="accent-line mb-6" />
+          <h1 className="font-display text-3xl md:text-4xl font-medium text-[var(--color-text-primary)] mb-2">
+            {album.titleZh}
+          </h1>
+          <p className="text-sm text-[var(--color-text-secondary)] tracking-[0.02em]">
+            {album.title} · {album.year} · {album.paintingIds.length} works
           </p>
-          <div className="flex justify-center">
-            <div className="w-24 h-0.5 bg-gradient-to-r from-transparent via-[var(--color-accent)] to-transparent" />
-          </div>
-          <p className="mt-6 text-base text-[var(--color-text-secondary)] leading-relaxed max-w-2xl mx-auto">
+          <p className="text-sm text-[var(--color-text-muted)] mt-4 max-w-2xl leading-relaxed">
             {album.descriptionZh}
           </p>
         </div>
       </ScrollReveal>
 
-      {/* Animated Gallery */}
+      {/* Gallery */}
       {albumPaintings.length > 0 ? (
         <AnimatedGallery
           paintings={albumPaintings}
@@ -67,19 +55,18 @@ export default async function AlbumDetailPage({
         />
       ) : (
         <div className="text-center py-20 text-[var(--color-text-muted)]">
-          <span className="text-4xl block mb-3">🖼️</span>
-          <p>该专辑暂无画作</p>
+          <p>No paintings in this album.</p>
         </div>
       )}
 
-      {/* Back link */}
+      {/* Back */}
       <ScrollReveal>
-        <div className="mt-16 text-center">
+        <div className="mt-16">
           <Link
             href="/album"
-            className="inline-flex items-center gap-2 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-accent)] transition-colors"
+            className="text-xs tracking-[0.1em] uppercase text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] transition-colors"
           >
-            ← 返回专辑列表
+            ← Back to Albums
           </Link>
         </div>
       </ScrollReveal>
